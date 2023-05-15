@@ -81,6 +81,9 @@ export interface RatingProps extends StarIconProps {
   tooltipClassName?: string
   /** Separator word in a title of a rating star `(1 out of 5)` */
   titleSeparator?: string
+  /** Disable touchscreen handling */
+  disableTouchscreen?: boolean
+
 }
 
 /**
@@ -136,7 +139,8 @@ export function Rating({
   titleSeparator = 'out of',
   SVGstyle,
   SVGstorkeWidth = 0,
-  SVGstrokeColor = 'currentColor'
+  SVGstrokeColor = 'currentColor',
+  disableTouchscreen = false
 }: RatingProps) {
   const [{ ratingValue, hoverValue, hoverIndex, valueIndex }, dispatch] = useReducer(reducer, {
     hoverIndex: 0,
@@ -208,7 +212,7 @@ export function Rating({
   const handlePointerEnter = (event: PointerEvent<HTMLSpanElement>) => {
     if (onPointerEnter) onPointerEnter(event)
     // Enable only on touch devices
-    if (!isTouchDevice()) return
+    if (disableTouchscreen || !isTouchDevice()) return
 
     handlePointerMove(event)
   }
@@ -221,7 +225,7 @@ export function Rating({
   }
 
   const handlePointerLeave = (event: PointerEvent<HTMLSpanElement>) => {
-    if (isTouchDevice()) handleClick()
+    if (isTouchDevice() && !disableTouchscreen) handleClick()
 
     dispatch({ type: 'PointerLeave' })
     if (onPointerLeave) onPointerLeave(event)
